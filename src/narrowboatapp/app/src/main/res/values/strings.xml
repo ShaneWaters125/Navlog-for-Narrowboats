@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">messageapp</string>
+    <string name="title_chat">Chats</string>
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_notifications">Notifications</string>
+    <string name="homefragment">Home Fragment</string>
+</resources>
