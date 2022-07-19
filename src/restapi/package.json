@@ -1,0 +1,22 @@
+{
+  "name": "restapi",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "pg:init": "pg_ctl init -D data",
+    "pg:start": "pg_ctl -D data start",
+    "pg:createdb": "createdb -h 127.0.0.1 app",
+    "pg:stop": "pg_ctl -D data stop",
+    "start": "NODE_ENV=development && node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.20.0",
+    "express": "^4.18.1",
+    "pg": "^8.7.3"
+  }
+}
