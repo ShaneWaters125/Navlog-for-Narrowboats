@@ -1,4 +1,4 @@
-package solace.narrowboat.ui.chat
+package solace.narrowboat.ui.logbook
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -9,33 +9,31 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
-import solace.narrowboat.data.Chat
-import solace.narrowboat.data.User
-import solace.narrowboat.databinding.FragmentChatBinding
+import solace.narrowboat.data.Journey
+import solace.narrowboat.databinding.FragmentLogbookBinding
 import solace.narrowboat.restapi.RetrofitClient
 import solace.narrowboat.restapi.RetrofitInterface
 import solace.narrowboat.ui.decoration.SideSpacingItemDecoration
 import solace.narrowboat.ui.decoration.TopSpacingItemDecoration
 
-class ChatFragment : Fragment() {
+class LogbookFragment : Fragment() {
 
-    private lateinit var chatFragment: FragmentChatBinding
-    private lateinit var chatAdapter: ChatRecycleViewAdapter
+    private lateinit var logbookFragment: FragmentLogbookBinding
+    private lateinit var journeyAdapter: JourneyRecycleViewAdapter
     private lateinit var retrofitInterface: RetrofitInterface
     private var compositeDisposable = CompositeDisposable()
 
     companion object{
-        var chats = mutableListOf<Chat>()
+        var journeys = mutableListOf<Journey>()
     }
-
 
     override fun onCreateView(
             inflater: LayoutInflater,
             container: ViewGroup?,
             savedInstanceState: Bundle?
     ): View? {
-        chatFragment = FragmentChatBinding.inflate(inflater, container, false)
-        return chatFragment.root
+        logbookFragment = FragmentLogbookBinding.inflate(inflater, container, false)
+        return logbookFragment.root
     }
 
 
@@ -45,30 +43,22 @@ class ChatFragment : Fragment() {
     }
 
     private fun initRecycleView(){
-        val recycleView = chatFragment.rvChats
+        val recycleView = logbookFragment.rvJourneys
         recycleView.apply {
             layoutManager = LinearLayoutManager(context)
             addItemDecoration(TopSpacingItemDecoration(20))
             addItemDecoration(SideSpacingItemDecoration(20))
-            chatAdapter = ChatRecycleViewAdapter()
-            adapter = chatAdapter
+            journeyAdapter = JourneyRecycleViewAdapter()
+            adapter = journeyAdapter
         }
-        chats.clear()
-        var user1: User = User(id = 1, name = "Bob")
-        var chat1: Chat = Chat(user1)
-        var user2: User = User(id = 2, name = "Tom")
-        var chat2: Chat = Chat(user2)
-        var user3: User = User(id = 3, name = "Scott")
-        var chat3: Chat = Chat(user3)
-        var user4: User = User(id = 4, name = "Rob")
-        var chat4: Chat = Chat(user4)
+        journeys.clear()
+        var journey1 = Journey("Journey 1")
+        var journey2 = Journey("Journey 2")
 
-        chats.add(chat1)
-        chats.add(chat2)
-        chats.add(chat3)
-        chats.add(chat4)
+        journeys.add(journey1)
+        journeys.add(journey2)
 
-        chatAdapter.submitList(chats)
+        journeyAdapter.submitList(journeys)
     }
 
     private fun connectServer(){
@@ -78,7 +68,7 @@ class ChatFragment : Fragment() {
                 retrofitInterface.registerUser(
                         "4",
                         "Pocho8",
-                        "Asshole",
+                        "Testing12390128094",
                         "test@gmail.com",
                         "2022-05-17 23:44:04.745302"
                 ).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())

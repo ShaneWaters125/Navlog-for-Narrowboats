@@ -3,18 +3,18 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
-    app:startDestination="@+id/navigation_chat">
+    app:startDestination="@+id/navigation_journey">
 
     <fragment
-        android:id="@+id/navigation_chat"
-        android:name="solace.narrowboat.ui.chat.ChatFragment"
-        android:label="@string/title_chat"
-        tools:layout="@layout/fragment_chat" />
+        android:id="@+id/navigation_journey"
+        android:name="solace.narrowboat.ui.logbook.LogbookFragment"
+        android:label="@string/title_journey"
+        tools:layout="@layout/fragment_logbook" />
 
     <fragment
-        android:id="@+id/navigation_dashboard"
-        android:name="solace.narrowboat.ui.dashboard.DashboardFragment"
-        android:label="@string/title_dashboard"
+        android:id="@+id/navigation_explorer"
+        android:name="solace.narrowboat.ui.explorer.ExplorerFragment"
+        android:label="@string/title_explorer"
         tools:layout="@layout/fragment_dashboard" />
 
     <fragment

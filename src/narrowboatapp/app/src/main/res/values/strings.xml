@@ -1,7 +1,16 @@
 <resources>
     <string name="app_name">messageapp</string>
-    <string name="title_chat">Chats</string>
-    <string name="title_dashboard">Dashboard</string>
+    <string name="title_journey">Journeys</string>
+    <string name="title_explorer">Explorer</string>
     <string name="title_notifications">Notifications</string>
     <string name="homefragment">Home Fragment</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="deletejourney">Are you sure you want to delete this journey?</string>
+    <string name="title_activity_journey">JourneyActivity</string>
+    <!--
+    This string is used for square devices and overridden by hello_world in
+    values-round/strings.xml for round devices.
+    -->
+    <string name="hello_world">Hello Square World!</string>
 </resources>
