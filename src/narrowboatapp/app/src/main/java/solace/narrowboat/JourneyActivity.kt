@@ -7,9 +7,11 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.ImageButton
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import solace.narrowboat.data.DatabaseHandler
 import solace.narrowboat.data.Journey
 import solace.narrowboat.data.Session
 import solace.narrowboat.ui.decoration.SideSpacingItemDecoration
@@ -33,6 +35,10 @@ class JourneyActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         supportActionBar?.hide()
+
+        val tvJourneyName = findViewById<TextView>(R.id.tvOpenJourneyName)
+        val journeyname = intent.getStringExtra("name")
+        tvJourneyName.text = journeyname.toString()
 
         initButtons()
         initRecycleViewer()
@@ -64,12 +70,10 @@ class JourneyActivity : AppCompatActivity() {
             sessionAdapter = SessionRecycleViewAdapter()
             adapter = sessionAdapter
         }
+        val id = intent.getIntExtra("id", 0)
+        var databaseHandler = DatabaseHandler(this)
+        sessions = databaseHandler.viewSessions(id)
 
-        sessions.clear()
-        val session1 = Session(1, "13:24 - 17:52", "01/08/2022", "1.2km", "A coal boat name")
-        sessions.add(session1)
-        val session2 = Session(1, "08:12 - 13:11", "02/08/2022", "1.5km", "A coal boat name")
-        sessions.add(session2)
         sessionAdapter.submitList(sessions)
 
     }

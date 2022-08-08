@@ -1,5 +1,6 @@
 package solace.narrowboat.ui.logbook
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
@@ -9,11 +10,12 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import solace.narrowboat.JourneyActivity
 import solace.narrowboat.LogbookActivity
+import solace.narrowboat.MapActivity
 import solace.narrowboat.R
 import solace.narrowboat.data.Session
 
 class SessionRecycleViewAdapter: RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-    private var sessions: List<Session> = ArrayList()
+    private var sessions = ArrayList<Session>()
     private lateinit var parentView: ViewGroup
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -31,6 +33,12 @@ class SessionRecycleViewAdapter: RecyclerView.Adapter<RecyclerView.ViewHolder>()
                     val intent = Intent(holder.itemView.context, LogbookActivity::class.java)
                     holder.itemView.context.startActivity(intent)
                 }
+
+                holder.itemView.findViewById<Button>(R.id.btnOpenMap).setOnClickListener {
+                    val intent = Intent(holder.itemView.context, MapActivity::class.java)
+                    intent.putExtra("id", sessions[position].sid)
+                    holder.itemView.context.startActivity(intent)
+                }
             }
         }
     }
@@ -40,7 +48,8 @@ class SessionRecycleViewAdapter: RecyclerView.Adapter<RecyclerView.ViewHolder>()
     }
 
     fun submitList(sessionList: List<Session>){
-        sessions = sessionList
+        sessions.clear()
+        sessions.addAll(sessionList)
         notifyDataSetChanged()
     }
 
@@ -52,8 +61,9 @@ class SessionRecycleViewAdapter: RecyclerView.Adapter<RecyclerView.ViewHolder>()
         private val sessionDistance: TextView = sessionView.findViewById(R.id.tvDistance)
         private val sessionBoat: TextView = sessionView.findViewById(R.id.tvBoatName)
 
+        @SuppressLint("SetTextI18n")
         fun bind(session: Session){
-            sessionTime.text = session.time
+            sessionTime.text = session.startTime + " - " + session.endTime
             sessionDate.text = session.date
             sessionDistance.text = session.distance
             sessionBoat.text = session.boatname

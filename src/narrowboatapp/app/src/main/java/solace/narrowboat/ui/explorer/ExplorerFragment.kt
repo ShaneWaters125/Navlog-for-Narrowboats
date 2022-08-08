@@ -19,7 +19,9 @@ import com.google.android.gms.maps.MapsInitializer
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.libraries.places.api.Places
+import com.google.maps.android.data.kml.KmlLayer
 import solace.narrowboat.databinding.FragmentDashboardBinding
+import solace.narrowboat.R
 
 class ExplorerFragment : Fragment() {
 
@@ -43,58 +45,57 @@ class ExplorerFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         Places.initialize(requireContext(), "AIzaSyAdBc0uiFkHzXWuyGqCG3x27-kjMBuXBsU")
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireContext())
-        updateGPS()
 
         val map = mapFragment.mapView
         map.onCreate(null)
         map.getMapAsync {
             MapsInitializer.initialize(requireContext())
             setMapLocation(it)
-//            val layer = KmlLayer(it, R.raw.opencanalmap, context)
-//            layer.addLayerToMap()
+            val layer = KmlLayer(it, R.raw.opencanalmap, context)
+            layer.addLayerToMap()
         }
     }
 
-    @SuppressLint("MissingPermission")
-    private fun updateGPS(){
-        if(checkPermissions()){
-                fusedLocationProviderClient.lastLocation.addOnCompleteListener{ task ->
-                    getNewLocation()
-                }
-        } else{
-            requestPermissions()
-        }
-
-    }
-
-    @SuppressLint("MissingPermission")
-    private fun getNewLocation(){
-        locationRequest = LocationRequest()
-        locationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
-        locationRequest.interval = 15000
-        locationRequest.fastestInterval = 5000
-        fusedLocationProviderClient!!.requestLocationUpdates(
-                locationRequest,locationCallback, Looper.myLooper()
-        )
-    }
-
-    private val locationCallback = object : LocationCallback(){
-        override fun onLocationResult(p0: LocationResult) {
-            val map = mapFragment.mapView
-            var lastLocation: Location = p0.lastLocation
-            println(lastLocation.longitude)
-            println(lastLocation.latitude)
-            curLocation = LatLng(lastLocation.latitude, lastLocation.longitude)
-            map.getMapAsync {
-                with(it){
-                    moveCamera(CameraUpdateFactory.newLatLngZoom(
-                            LatLng(lastLocation.latitude, lastLocation.longitude), 16f
-                    ))
-                    addMarker(MarkerOptions().position(curLocation))
-                }
-            }
-        }
-    }
+//    @SuppressLint("MissingPermission")
+//    private fun updateGPS(){
+//        if(checkPermissions()){
+//                fusedLocationProviderClient.lastLocation.addOnCompleteListener{ task ->
+//                    getNewLocation()
+//                }
+//        } else{
+//            requestPermissions()
+//        }
+//
+//    }
+//
+//    @SuppressLint("MissingPermission")
+//    private fun getNewLocation(){
+//        locationRequest = LocationRequest()
+//        locationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
+//        locationRequest.interval = 15000
+//        locationRequest.fastestInterval = 5000
+//        fusedLocationProviderClient!!.requestLocationUpdates(
+//                locationRequest,locationCallback, Looper.myLooper()
+//        )
+//    }
+//
+//    private val locationCallback = object : LocationCallback(){
+//        override fun onLocationResult(p0: LocationResult) {
+//            val map = mapFragment.mapView
+//            var lastLocation: Location = p0.lastLocation
+//            println(lastLocation.longitude)
+//            println(lastLocation.latitude)
+//            curLocation = LatLng(lastLocation.latitude, lastLocation.longitude)
+//            map.getMapAsync {
+//                with(it){
+//                    moveCamera(CameraUpdateFactory.newLatLngZoom(
+//                            LatLng(lastLocation.latitude, lastLocation.longitude), 16f
+//                    ))
+//                    addMarker(MarkerOptions().position(curLocation))
+//                }
+//            }
+//        }
+//    }
 
 
     private fun checkPermissions():Boolean{
@@ -119,7 +120,6 @@ class ExplorerFragment : Fragment() {
     private fun setMapLocation(map : GoogleMap){
         with(map){
             moveCamera(CameraUpdateFactory.newLatLngZoom(position, 13f))
-            addMarker(MarkerOptions().position(position))
             mapType = GoogleMap.MAP_TYPE_NORMAL
             setOnMapClickListener {
                 Toast.makeText(context, "Clicked on map", Toast.LENGTH_SHORT).show()
