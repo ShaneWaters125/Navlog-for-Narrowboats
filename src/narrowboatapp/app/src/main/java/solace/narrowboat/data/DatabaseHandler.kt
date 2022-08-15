@@ -192,6 +192,8 @@ class DatabaseHandler(context: Context) : SQLiteOpenHelper(context, DATABASE_NAM
         return markers
     }
 
+
+
     fun emptyTable(){
         val db = this.writableDatabase
         var EMPTY_TABLE = ("DELETE FROM " + TABLE_SESSION)
