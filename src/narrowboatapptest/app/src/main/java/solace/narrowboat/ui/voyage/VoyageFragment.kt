@@ -31,12 +31,14 @@ import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.libraries.places.api.Places
+import solace.narrowboat.LogbookActivity
 import solace.narrowboat.MainActivity
 import solace.narrowboat.R
 import solace.narrowboat.data.DatabaseHandler
 import solace.narrowboat.data.Journey
 import solace.narrowboat.databinding.FragmentVoyageBinding
 import solace.narrowboat.services.LocationService
+import java.math.RoundingMode
 
 
 class VoyageFragment : Fragment() {
@@ -104,6 +106,7 @@ class VoyageFragment : Fragment() {
                 isMyLocationEnabled = true
             }
         }
+
     }
 
     @SuppressLint("MissingPermission")
@@ -163,6 +166,14 @@ class VoyageFragment : Fragment() {
             resumeBtn.visibility = View.INVISIBLE
         }
 
+        logbookBtn.setOnClickListener {
+            val databaseHandler = DatabaseHandler(requireContext())
+            val intent = Intent(requireContext(), LogbookActivity::class.java)
+            intent.putExtra("id", databaseHandler.getMostRecentLogbook())
+            databaseHandler.close()
+            requireContext().startActivity(intent)
+        }
+
 
     }
 
@@ -209,7 +220,11 @@ class VoyageFragment : Fragment() {
         val btnSelectJourney: Button = journeyDialog.findViewById(R.id.btnSelectJourney)
         btnSelectJourney.setOnClickListener {
             MainActivity.journeyIntent = Intent(requireActivity(), LocationService::class.java)
-            MainActivity.journeyIntent.action = journeys[spinnerJourney.selectedItemPosition].id.toString()
+
+            databaseHandler.addLogbook("", "", "", "", "", "", "", "", "", "")
+            val intentString = journeys[spinnerJourney.selectedItemPosition].id.toString() + " " + databaseHandler.getMostRecentLogbook().toString()
+
+            MainActivity.journeyIntent.action = intentString
             requireActivity().startForegroundService(MainActivity.journeyIntent)
 
             resumeBtn.visibility = View.INVISIBLE
@@ -223,8 +238,8 @@ class VoyageFragment : Fragment() {
             journeyDialog.dismiss()
         }
 
-        journeyDialog.setCanceledOnTouchOutside(false)
-        journeyDialog.setCancelable(false)
+//        journeyDialog.setCanceledOnTouchOutside(false)
+//        journeyDialog.setCancelable(false)
         journeyDialog.show()
     }
 
@@ -278,20 +293,15 @@ class VoyageFragment : Fragment() {
     }
 
     inner class LocationUpdateListener : LocationListener{
+        @SuppressLint("SetTextI18n")
         override fun onLocationChanged(location: Location) {
             if(isFocused){
                 map.getMapAsync {
                     with(it){
-                        moveCamera(CameraUpdateFactory.newLatLngZoom(
-                                LatLng(location.latitude, location.longitude), 16f
-                        ))
-                        // INTENT DOES NOT WORK WHEN THE APP IS RELOADED AS IT IS RESET WHEN LOADED BUT THE SERVICE IS STILL RUNNING RESULTING IN MARKERS NOT BEING ADDED AFTER OPENING THE APP AGAIN.
-//                        if(MainActivity.journeyIntent.isInitialized){
-//                            var locations = MainActivity.locationService.getPositions()
-//                            if(locations.isNotEmpty()){
-//                                addMarker(MarkerOptions().position(LatLng(locations[locations.size-1].latitude, locations[locations.size-1].longitude)))
-//                            }
-//                        }
+//                        moveCamera(CameraUpdateFactory.newLatLngZoom(
+//                                LatLng(location.latitude, location.longitude), 16f
+//                        ))
+                        voyageFragment.tvSpeed.text = (location.speed * 1.944).toBigDecimal().setScale(2, RoundingMode.UP).toString() + " knots"
                     }
                 }
             }

@@ -29,13 +29,14 @@ class LocationService : Service(), LocationListener {
     private var locations = arrayListOf<MarkerPosition>()
 
     private var MIN_DISTANCE: Float = 1F
-    private var MIN_TIME: Long = 10000
+    private var MIN_TIME: Long = 30000
     private lateinit var locationManager: LocationManager
     private var longitude = 0.0
     private var latitude = 0.0
     private lateinit var startTime: String
 
     private var journeyid: Int = 0
+    private var logbookid: Int = 0
     lateinit var services: LocationService
 
     @SuppressLint("MissingPermission")
@@ -56,7 +57,7 @@ class LocationService : Service(), LocationListener {
                 val databaseHandler = DatabaseHandler(this)
                 val currentTime: String = SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(Date())
                 val currentDate = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(Date())
-                databaseHandler.addSession(journeyid, startTime, currentTime, currentDate, roundedDistance, "A cool boat")
+                databaseHandler.addSession(journeyid, logbookid, startTime, currentTime, currentDate, roundedDistance, "A cool boat")
 
                 for(location in locations){
                     databaseHandler.addMarker(location.latitude.toString(), location.longitude.toString(), databaseHandler.getMostRecentSession(), location.time)
@@ -69,8 +70,12 @@ class LocationService : Service(), LocationListener {
             } else if(intent.action == "ResumeService"){
                 resumeTracking()
             } else{
-                journeyid = intent.action?.toInt()!!
-                println(journeyid)
+//                journeyid = intent.action?.toInt()!!
+                val intentString = intent.action?.split(" ")
+                journeyid = intentString?.first()?.toInt()!!
+                logbookid = intentString.last().toInt()
+
+
                 locations.clear()
                 startTime = SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(Date())
                 var notificationChannel = NotificationChannel("1", "Location Service", NotificationManager.IMPORTANCE_DEFAULT)

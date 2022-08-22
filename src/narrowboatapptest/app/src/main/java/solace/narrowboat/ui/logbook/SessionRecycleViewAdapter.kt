@@ -31,6 +31,7 @@ class SessionRecycleViewAdapter: RecyclerView.Adapter<RecyclerView.ViewHolder>()
 
                 holder.itemView.findViewById<Button>(R.id.btnOpenLogbook).setOnClickListener {
                     val intent = Intent(holder.itemView.context, LogbookActivity::class.java)
+                    intent.putExtra("id", sessions[position].lid)
                     holder.itemView.context.startActivity(intent)
                 }
 
