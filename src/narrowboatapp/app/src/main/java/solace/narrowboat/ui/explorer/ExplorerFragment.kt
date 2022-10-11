@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Bundle
+import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
@@ -19,7 +20,11 @@ import com.google.android.gms.maps.MapsInitializer
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.libraries.places.api.Places
+import com.google.maps.android.data.kml.KmlContainer
 import com.google.maps.android.data.kml.KmlLayer
+import com.google.maps.android.data.kml.KmlPlacemark
+import com.google.maps.android.data.kml.KmlPoint
+import solace.narrowboat.MainActivity
 import solace.narrowboat.databinding.FragmentDashboardBinding
 import solace.narrowboat.R
 
@@ -27,7 +32,6 @@ class ExplorerFragment : Fragment() {
 
     private lateinit var mapFragment: FragmentDashboardBinding
     lateinit var curLocation: LatLng
-    val position = LatLng(52.415470222546176, -4.082938329946786)
 
     //Google API for location services.
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
@@ -38,6 +42,8 @@ class ExplorerFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        super.onCreate(savedInstanceState)
+
         mapFragment = FragmentDashboardBinding.inflate(inflater, container, false)
         return mapFragment.root
     }
@@ -49,64 +55,29 @@ class ExplorerFragment : Fragment() {
         val map = mapFragment.mapView
         map.onCreate(null)
         map.getMapAsync {
+
             MapsInitializer.initialize(requireContext())
             setMapLocation(it)
-            val layer = KmlLayer(it, R.raw.opencanalmap, context)
-            layer.addLayerToMap()
+
+            var layer: KmlLayer?
+
+            val run = Runnable {
+                layer = KmlLayer(it, R.raw.opencanalmap, context)
+                if(Thread.interrupted()){
+                    MainActivity.run {
+                        activity?.runOnUiThread {
+                            layer?.addLayerToMap()
+                        }
+                    }
+                    return@Runnable
+                }
+            }
+
+            val thread = Thread(run)
+            thread.start()
+            thread.interrupt()
+
         }
-    }
-
-//    @SuppressLint("MissingPermission")
-//    private fun updateGPS(){
-//        if(checkPermissions()){
-//                fusedLocationProviderClient.lastLocation.addOnCompleteListener{ task ->
-//                    getNewLocation()
-//                }
-//        } else{
-//            requestPermissions()
-//        }
-//
-//    }
-//
-//    @SuppressLint("MissingPermission")
-//    private fun getNewLocation(){
-//        locationRequest = LocationRequest()
-//        locationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
-//        locationRequest.interval = 15000
-//        locationRequest.fastestInterval = 5000
-//        fusedLocationProviderClient!!.requestLocationUpdates(
-//                locationRequest,locationCallback, Looper.myLooper()
-//        )
-//    }
-//
-//    private val locationCallback = object : LocationCallback(){
-//        override fun onLocationResult(p0: LocationResult) {
-//            val map = mapFragment.mapView
-//            var lastLocation: Location = p0.lastLocation
-//            println(lastLocation.longitude)
-//            println(lastLocation.latitude)
-//            curLocation = LatLng(lastLocation.latitude, lastLocation.longitude)
-//            map.getMapAsync {
-//                with(it){
-//                    moveCamera(CameraUpdateFactory.newLatLngZoom(
-//                            LatLng(lastLocation.latitude, lastLocation.longitude), 16f
-//                    ))
-//                    addMarker(MarkerOptions().position(curLocation))
-//                }
-//            }
-//        }
-//    }
-
-
-    private fun checkPermissions():Boolean{
-        if(ActivityCompat.checkSelfPermission(requireContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(requireContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED){
-            return true
-        }
-        return false
-    }
-
-    private fun requestPermissions(){
-        ActivityCompat.requestPermissions(requireActivity(), arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.ACCESS_COARSE_LOCATION), 52)
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
@@ -119,7 +90,7 @@ class ExplorerFragment : Fragment() {
 
     private fun setMapLocation(map : GoogleMap){
         with(map){
-            moveCamera(CameraUpdateFactory.newLatLngZoom(position, 13f))
+//            moveCamera(CameraUpdateFactory.newLatLngZoom(position, 13f))
             mapType = GoogleMap.MAP_TYPE_NORMAL
             setOnMapClickListener {
                 Toast.makeText(context, "Clicked on map", Toast.LENGTH_SHORT).show()

@@ -20,8 +20,6 @@ class MainActivity : AppCompatActivity() {
     companion object{
         var isVoyageStarted = false
         var isPaused = false
-        lateinit var locationService: LocationService
-        lateinit var selectedJourney: Journey
         lateinit var journeyIntent: Intent
     }
 

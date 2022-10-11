@@ -93,26 +93,4 @@ class LogbookFragment : Fragment() {
         }
         createJourneyDialog.show()
     }
-
-//    private fun connectServer(){
-//        val retrofit = RetrofitClient.getInstance()
-//        retrofitInterface = retrofit.create(RetrofitInterface::class.java)
-//        compositeDisposable.add(
-//                retrofitInterface.registerUser(
-//                        "4",
-//                        "Pocho8",
-//                        "Testing12390128094",
-//                        "test@gmail.com",
-//                        "2022-05-17 23:44:04.745302"
-//                ).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
-//                        .subscribe( { result ->
-//                            if (result.toString().contains("yes")){
-//                                println("WORKINGWORKINGWORKINGWORKINGWORKINGWORKINGWORKINGWORKINGWORKINGWORKINGWORKING")
-//                            } else{
-//                                println("FUCKEDFUCKEDFUCKEDFUCKEDFUCKEDFUCKEDFUCKEDFUCKEDFUCKEDFUCKEDFUCKEDFUCKEDFUCKED")
-//                            }
-//                        }, {
-//                            println("Nodejs server is offline!")
-//                        }))
-//    }
 }
